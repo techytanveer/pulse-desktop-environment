@@ -1,0 +1,27 @@
+#include "Compositor.h"
+#include <QDebug>
+
+namespace Pulse {
+
+Compositor::Compositor(QObject* parent)
+    : QWaylandCompositor(parent) {
+    
+    qDebug() << "Pulse Compositor initialized";
+    
+    // Connect signals
+    connect(this, &QWaylandCompositor::surfaceCreated,
+            this, &Compositor::onSurfaceCreated);
+}
+
+void Compositor::onSurfaceCreated(QWaylandSurface* surface) {
+    qDebug() << "Surface created for process:" << surface->client()->processId();
+    // Connect to surface destruction
+    connect(surface, &QWaylandSurface::destroyed,
+            this, &Compositor::onSurfaceDestroyed);
+}
+
+void Compositor::onSurfaceDestroyed() {
+    qDebug() << "Surface destroyed";
+}
+
+} // namespace Pulse
